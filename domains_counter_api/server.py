@@ -3,7 +3,6 @@ import logging
 import logging.config
 
 import toml
-
 from aiohttp import web
 
 from domains_counter_api import dbi
@@ -13,9 +12,7 @@ logger = logging.getLogger('domains_counter')
 
 
 class DomainsCounter:
-    '''
-    Приложение -- API для храниения доменов и времени обращения к ним.
-    '''
+    """Приложение -- API для хранения доменов и времени обращения к ним."""
 
     def __init__(self, loop, config):
         self.loop = loop
@@ -49,28 +46,27 @@ class DomainsCounter:
         logger.debug('Server started')
 
     async def _cleanup(self):
-        '''
-        Подчистим все открытые коннекты.
-        '''
+        """Подчистим все открытые коннекты."""
+
         logger.debug('Server stopping..')
         await self.dbi.cleanup()
         await self.web_app_runner.cleanup()
 
     def stop(self):
-        '''
-        Начнем процесс остановки всего.
-        '''
+        """Начнем процесс остановки всего."""
+
         self.loop.run_until_complete(self._cleanup())
 
 
 def load_config(filename):
-    '''
+    """
     Загрузим конфигурацию из toml файла.
     :param filename:
         `str`, имя файла с конфигурацией
     :return:
         'dict', словарь с конфигурацией
-    '''
+    """
+
     return toml.load(filename)
 
 

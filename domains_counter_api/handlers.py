@@ -1,8 +1,8 @@
 import json
 import time
-from jsonschema import validate
 
 from aiohttp import web
+from jsonschema import validate
 from tldextract import tldextract
 
 json_schema = {
@@ -24,7 +24,7 @@ class Handlers:
         self.dbi = dbi
 
     async def add_links(self, request):
-        '''
+        """
         Хэндлер сохранения в базе переданного списка доменов и времени
         обращения к ним.
         Ожидаем список доменов в теле запроса в json словаре вида:
@@ -45,7 +45,7 @@ class Handlers:
         :return:
             {'status': 'ok'} - при получении корректной структуры данных, иначе
             400 BadRequest
-        '''
+        """
         raw_body = await request.text()
         try:
             body = json.loads(raw_body)
@@ -69,7 +69,7 @@ class Handlers:
         })
 
     async def get_visited_domain(self, request):
-        '''
+        """
         Хэндлер получения списка уникальных посещенных доменов за переданный
         интервал времени.
         Границы интересующего интервала (в секундах от начала эпохи Unix)
@@ -85,7 +85,7 @@ class Handlers:
                     'stackoverflow.com'
                   ]
                 }
-        '''
+        """
         try:
             req_from = int(request.query.get('from'))
             req_to = int(request.query.get('to'))

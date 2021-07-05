@@ -14,18 +14,17 @@ class Interface:
         self.pool = None
 
     async def connect(self):
-        '''
-        Подключение к базе.
-        '''
+        """Подключение к базе."""
         try:
             self.pool = await aioredis.create_redis_pool(self.uri)
             logger.debug('Connected to redis.')
             return True
-        except (Exception) as e:
+        except Exception as e:
             logger.error('Error occurred while connecting to redis: %s', e)
+            exit(1)
 
     async def add_domains(self, domains, timestamp):
-        '''
+        """
         Сохраним список доменов в базе. В качестве контейнера будем
         использовать отсортированное множество (SortedSet). В качестве ключа
         сортировки (score) используем timestamp (количество секунд от начала
@@ -37,7 +36,8 @@ class Interface:
             `list` -- список имен доменов для сохранения в базу;
         :param timestamp:
             `int` -- количество секунд от начала эпохи Unix;
-        '''
+        """
+
         args = []
         if isinstance(domains, (list, tuple, set)):
             for d in domains:
@@ -52,7 +52,7 @@ class Interface:
             logger.error('Error occurred while adding domains: %s', e)
 
     async def get_domains_by_scores(self, min_score, max_score):
-        '''
+        """
         Получим список доменов с рейтингом (score) из диапазона [min_score,
         max_score] включительно.
 
@@ -62,7 +62,8 @@ class Interface:
             `int` -- конец диапазона;
         :return:
             `list` -- список доменов;
-        '''
+        """
+
         try:
             return await self.pool.zrangebyscore(
                 self.DOMAIN_KEY, min_score, max_score, encoding='utf-8'
@@ -71,9 +72,8 @@ class Interface:
             logger.error('Error occurred while getting domains: %s', e)
 
     async def cleanup(self):
-        '''
-        Закроем все коннекты к redis.
-        '''
+        """Закроем все коннекты к redis."""
+
         if self.pool:
             self.pool.close()
             await self.pool.wait_closed()
